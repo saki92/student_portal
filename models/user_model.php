@@ -47,5 +47,18 @@ class user_model extends CI_Model
         $this->db->where('md5(email)', $key);
         return $this->db->update('user', $data);
     }
+	
+	function login_query($uname, $pword)
+	{
+		$query = $this->db->get_where('students', array('roll_no' => $uname, 'password' => $pword));
+		if ($query->num_rows() > 0)
+		{
+			return $query->row_array();
+		}
+		elseif ($query->num_rows() == 0)
+		{
+			return array('error_msg'=>"Roll number and Password didn't match");
+		}
+	}
 }
 ?>
