@@ -18,8 +18,7 @@ class user extends CI_Controller
     function register()
     {
         //set validation rules
-        $this->form_validation->set_rules('fname', 'First Name', 'trim|required|alpha|min_length[3]|max_length[30]|xss_clean');
-        $this->form_validation->set_rules('lname', 'Last Name', 'trim|required|alpha|min_length[3]|max_length[30]|xss_clean');
+        $this->form_validation->set_rules('roll_no', 'Roll Number', 'trim|required|alpha|min_length[3]|max_length[30]|xss_clean');
         $this->form_validation->set_rules('email', 'Email ID', 'trim|required|valid_email|is_unique[user.email]');
         $this->form_validation->set_rules('password', 'Password', 'trim|required|matches[cpassword]|md5');
         $this->form_validation->set_rules('cpassword', 'Confirm Password', 'trim|required');
@@ -34,8 +33,7 @@ class user extends CI_Controller
         {
             //insert the user registration details into database
             $data = array(
-                'fname' => $this->input->post('fname'),
-                'lname' => $this->input->post('lname'),
+                'roll_no' => $this->input->post('roll_no'),
                 'email' => $this->input->post('email'),
                 'password' => $this->input->post('password')
             );
@@ -82,21 +80,60 @@ class user extends CI_Controller
 	
 	function login()
 	{
-		$this->form_validation->set_rules('check_entered', 'Bot check', 'trim|required|numeric|min_length[1]|max_length[2]|xss_clean');
+		$data = $this->input->post();
+		$this->form_validation->set_rules('check_entered', 'Bot check', 'trim|required|numeric|max_length[2]|min_length[1]|xss_clean');
         $this->form_validation->set_rules('uname', 'Roll Number', 'trim|required|numeric|min_length[9]|max_length[13]|xss_clean');
 		$this->form_validation->set_rules('pword', 'Password', 'trim|required');
 		
-		if ($data['check_hidden'] == $data['check_entered'] && $this->form_validation->run() == FALSE)
+		if ($data['check_sum'] == md5($data['check_entered']) && $this->form_validation->run() == TRUE)
+		//if ($this->form_validation->run() == TRUE)
 		{
 			$data = $this->input->post();
 			$user_data = $this->user_model->login_query($data['uname'], $data['pword']); //return as $query->row_array()
+			if (isset($user_data['error_msg'])
+			{
+				$this->session->set_flashdata('login_status','Failed to upload to database. Try later');
+				redirect('user/login');
+			}
 			$session_data = array('Name'=>$user_data['name'], 'Roll number']=>$user_data['roll_no']);
 			$this->session->set_userdata($session_data);
 			$this->load->view('user/home', $user_data); //user_data array has all user info in table 'students'. This can be used in bootstrap generated view
 		}
 		else
 		{
-			$this->load->view('user/login');
+			$check = array('num1'=>rand(0, 9), 'num2'=>rand(0, 9), 'sum'=>md5($check['num1']+$check['num2'])); //to check bot or human
+			$this->load->view('user/login' $check); //give the $check['sum'] in the a hidden form with name="check_sum"
+		}
+	}
+	
+	function loadUserData()
+	{
+		if (!isset($this->input->post('first_access')))
+		{
+			$this->form_validation->set_rules('fname', 'First Name', 'trim|required|alpha|min_length[3]|max_length[30]|xss_clean');
+			$this->form_validation->set_rules('lname', 'Last Name', 'trim|required|alpha|min_length[1]|max_length[30]|xss_clean');
+			$this->form_validation->set_rules('college', 'College', 'trim|required|alpha|min_length[3]|max_length[30]|xss_clean');
+			$this->form_validation->set_rules('year_intake', 'Year of intake', 'trim|required|numeric|exact_length[4]|greater_than[2011]|less_than['. intval(date("Y"))+1 .']|xss_clean');
+			//dept, regulation should be given as dropdwon
+		}
+		
+		if ($this->form_validation->run() == FALSE)
+		{
+			$this->load->view('user/load_user_data');
+		}
+		else
+		{
+			$load_data = $this->input->post();
+			if ($this->user_model->updateUserData(unset($load_data['first_access'])))
+			{
+				$this->session->set_flashdata('load_status','Successfully updated in database');
+				redirect('user/loaduserdata');
+			}
+			else
+			{
+				$this->session->set_flashdata('load_status','Failed to upload to database. Try later');
+				redirect('user/loaduserdata');
+			}
 		}
 	}
 }
