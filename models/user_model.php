@@ -48,7 +48,7 @@ class user_model extends CI_Model
         return $this->db->update('user', $data);
     }
 	
-	function login_query($uname, $pword)
+	function loginQuery($uname, $pword)
 	{
 		$query = $this->db->get_where('students', array('roll_no' => $uname, 'password' => $pword));
 		if ($query->num_rows() > 0)
@@ -59,6 +59,11 @@ class user_model extends CI_Model
 		{
 			return array('error_msg'=>"Roll number and Password didn't match");
 		}
+	}
+	
+	function updateUserData($new_data)
+	{
+		return $this->db->insert('students', $new_data);
 	}
 }
 ?>
