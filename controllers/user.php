@@ -81,7 +81,7 @@ class user extends CI_Controller
 	function login()
 	{
 		$data = $this->input->post();
-		$this->form_validation->set_rules('check_entered', 'Bot check', 'trim|required|numeric|max_length[2]|min_length[1]|xss_clean');
+		$this->form_validation->set_rules('check_entered', 'Entered Sum', 'trim|required|numeric|max_length[2]|min_length[1]|xss_clean');
         $this->form_validation->set_rules('uname', 'Roll Number', 'trim|required|numeric|min_length[9]|max_length[13]|xss_clean');
 		$this->form_validation->set_rules('pword', 'Password', 'trim|required');
 		
@@ -89,7 +89,7 @@ class user extends CI_Controller
 		//if ($this->form_validation->run() == TRUE)
 		{
 			$data = $this->input->post();
-			$user_data = $this->user_model->login_query($data['uname'], $data['pword']); //return as $query->row_array()
+			$user_data = $this->user_model->loginQuery($data['uname'], $data['pword']); //return as $query->row_array()
 			if (isset($user_data['error_msg'])
 			{
 				$this->session->set_flashdata('login_status','Failed to upload to database. Try later');
@@ -119,7 +119,7 @@ class user extends CI_Controller
 		
 		if ($this->form_validation->run() == FALSE)
 		{
-			$this->load->view('user/load_user_data');
+			$this->load->view('user/load_user_data'); //load same page
 		}
 		else
 		{
