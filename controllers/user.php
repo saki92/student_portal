@@ -27,7 +27,7 @@ class user extends CI_Controller
         if ($this->form_validation->run() == FALSE)
         {
             // fails
-            $this->load->view('user_registration_view');
+            $this->load->view('user/user_registration_view');
         }
         else
         {
@@ -85,37 +85,40 @@ class user extends CI_Controller
         $this->form_validation->set_rules('uname', 'Roll Number', 'trim|required|numeric|min_length[9]|max_length[13]|xss_clean');
 		$this->form_validation->set_rules('pword', 'Password', 'trim|required');
 		
-		if ($data['check_sum'] == md5($data['check_entered']) && $this->form_validation->run() == TRUE)
+		if (!empty($data))
 		//if ($this->form_validation->run() == TRUE)
 		{
-			$data = $this->input->post();
-			$user_data = $this->user_model->loginQuery($data['uname'], $data['pword']); //return as $query->row_array()
-			if (isset($user_data['error_msg'])
+			if ($data['check_sum'] == md5($data['check_entered']) && $this->form_validation->run() == TRUE)
 			{
-				$this->session->set_flashdata('login_status','Failed to upload to database. Try later');
-				redirect('user/login');
-			}
-			$session_data = array('Name'=>$user_data['name'], 'Roll number']=>$user_data['roll_no']);
-			$this->session->set_userdata($session_data);
-			$this->load->view('user/home', $user_data); //user_data array has all user info in table 'students'. This can be used in bootstrap generated view
+				$data = $this->input->post();
+				$user_data = $this->user_model->loginQuery($data['uname'], $data['pword']); //return as $query->row_array()
+				if (isset($user_data['error_msg']))
+				{
+					$this->session->set_flashdata('login_status','Failed to upload to database. Try later');
+					redirect('user/login');
+				}
+				$session_data = array('Name'=>$user_data['name'], 'Roll number'=>$user_data['roll_no']);
+				$this->session->set_userdata($session_data);
+				$this->load->view('user/home', $user_data); //user_data array has all user info in table 'students'. This can be used in bootstrap generated view
+				}
+			
 		}
 		else
 		{
-			$check = array('num1'=>rand(0, 9), 'num2'=>rand(0, 9), 'sum'=>md5($check['num1']+$check['num2'])); //to check bot or human
-			$this->load->view('user/login' $check); //give the $check['sum'] in the a hidden form with name="check_sum"
+			$num1 = rand(0, 9);
+			$num2 = rand(0, 9);
+			$check = array('num1'=>$num1, 'num2'=>$num2, 'sum'=>md5($num1+$num2)); //to check bot or human
+			$this->load->view('user/login', $check); //give the $check['sum'] in the a hidden form with name="check_sum"
 		}
 	}
 	
 	function loadUserData()
 	{
-		if (!isset($this->input->post('first_access')))
-		{
-			$this->form_validation->set_rules('fname', 'First Name', 'trim|required|alpha|min_length[3]|max_length[30]|xss_clean');
-			$this->form_validation->set_rules('lname', 'Last Name', 'trim|required|alpha|min_length[1]|max_length[30]|xss_clean');
-			$this->form_validation->set_rules('college', 'College', 'trim|required|alpha|min_length[3]|max_length[30]|xss_clean');
-			$this->form_validation->set_rules('year_intake', 'Year of intake', 'trim|required|numeric|exact_length[4]|greater_than[2011]|less_than['. intval(date("Y"))+1 .']|xss_clean');
-			//dept, regulation should be given as dropdwon
-		}
+		$this->form_validation->set_rules('fname', 'First Name', 'trim|required|alpha|min_length[3]|max_length[30]|xss_clean');
+		$this->form_validation->set_rules('lname', 'Last Name', 'trim|required|alpha|min_length[1]|max_length[30]|xss_clean');
+		$this->form_validation->set_rules('college', 'College', 'trim|required|alpha|min_length[3]|max_length[30]|xss_clean');
+		$this->form_validation->set_rules('year_intake', 'Year of intake', 'trim|required|numeric|exact_length[4]|greater_than[2011]|less_than['. intval(date("Y"))+1 .']|xss_clean');
+		//dept, regulation should be given as dropdwon
 		
 		if ($this->form_validation->run() == FALSE)
 		{
@@ -124,7 +127,7 @@ class user extends CI_Controller
 		else
 		{
 			$load_data = $this->input->post();
-			if ($this->user_model->updateUserData(unset($load_data['first_access'])))
+			if ($this->user_model->updateUserData($load_data))
 			{
 				$this->session->set_flashdata('load_status','Successfully updated in database');
 				redirect('user/loaduserdata');

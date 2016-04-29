@@ -5,6 +5,7 @@ class Guest extends CI_Controller {
     {
         parent::__construct();
         $this->load->model('gpa_model');
+		$this->load->helper(array('form', 'url'));
     }
     
     public function index() 
@@ -18,6 +19,7 @@ class Guest extends CI_Controller {
         $data['dept'] = 'Choose your department';
         $data['sem_gpa'] = 'Choose the semester for finding the GPA';
         $data['sem_cgpa'] = 'Choose the end semester for finding CGPA';
+		$data['type'] = $type;
         
         //have to load header template here
         $this->load->view('guest/'.$type, $data);

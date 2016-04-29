@@ -4,8 +4,8 @@
 </head>
 <body>
     <center>
-	<?php echo $sem_gpa; ?>
-	<form action="http://localhost/codeigniter-3.0.6/index.php/guest/table/gpa" method="post">
+	<?php echo $sem_gpa;
+	echo form_open('guest/table/'.$type); ?>
 	<select name="sem">
 		<option value="1">1</option>
 		<option value="2">2</option>
