@@ -24,8 +24,8 @@
                 echo form_open("user/login", $attributes);?>
                 <div class="form-group">
                     <label for="name">Roll Number</label>
-                    <input class="form-control" name="roll_no" placeholder="Roll Number" type="text" value="<?php echo set_value('roll_no'); ?>" />
-                    <span class="text-danger"><?php echo form_error('roll_no'); ?></span>
+                    <input class="form-control" name="uname" placeholder="Roll Number" type="text" value="<?php echo set_value('uname'); ?>" />
+                    <span class="text-danger"><?php echo form_error('uname'); ?></span>
                 </div>
 
                 <div class="form-group">
@@ -36,7 +36,7 @@
 				
 				<div class="form-group">
                     <label for="check_entered"><?php echo $num1 . '+' . $num2; ?></label>
-                    <input class="form-control" name="check_entered" placeholder="Enter the sum" type="text" value="<?php //echo set_value('check_entered'); ?>" /><input type="hidden" name="check_sum" value="<?php echo $sum; ?>"/>
+                    <input class="form-control" name="check_entered" placeholder="Enter the sum" type="text" value="<?php echo set_value('check_entered'); ?>" /><input type="hidden" name="check_sum" value="<?php echo $sum; ?>"/>
                     <span class="text-danger"><?php echo form_error('check_entered'); ?></span>
                 </div>
 				

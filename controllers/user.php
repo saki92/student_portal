@@ -81,15 +81,20 @@ class user extends CI_Controller
 	function login()
 	{
 		$data = $this->input->post();
-		$this->form_validation->set_rules('check_entered', 'Entered Sum', 'trim|required|numeric|max_length[2]|min_length[1]|xss_clean');
+		$this->form_validation->set_rules('check_entered', 'Entered Sum', 'trim|required|numeric|max_length[2]|xss_clean');
         $this->form_validation->set_rules('uname', 'Roll Number', 'trim|required|numeric|min_length[9]|max_length[13]|xss_clean');
 		$this->form_validation->set_rules('pword', 'Password', 'trim|required');
 		
 		if (!empty($data))
 		//if ($this->form_validation->run() == TRUE)
 		{
-			if ($data['check_sum'] == md5($data['check_entered']) && $this->form_validation->run() == TRUE)
+			if ($this->form_validation->run() == FALSE)
 			{
+				goto page_load;
+			}
+			elseif ($data['check_sum'] == md5($data['check_entered']))
+			{
+
 				$data = $this->input->post();
 				$user_data = $this->user_model->loginQuery($data['uname'], $data['pword']); //return as $query->row_array()
 				if (isset($user_data['error_msg']))
@@ -100,10 +105,10 @@ class user extends CI_Controller
 				$session_data = array('Name'=>$user_data['name'], 'Roll number'=>$user_data['roll_no']);
 				$this->session->set_userdata($session_data);
 				$this->load->view('user/home', $user_data); //user_data array has all user info in table 'students'. This can be used in bootstrap generated view
-				}
+			}
 			
 		}
-		else
+		else page_load:
 		{
 			$num1 = rand(0, 9);
 			$num2 = rand(0, 9);
