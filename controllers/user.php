@@ -99,12 +99,19 @@ class user extends CI_Controller
 				$user_data = $this->user_model->loginQuery($data['uname'], $data['pword']); //return as $query->row_array()
 				if (isset($user_data['error_msg']))
 				{
-					$this->session->set_flashdata('login_status','Failed to upload to database. Try later');
+					$this->session->set_flashdata('login_status','Username and Password did not match');
 					redirect('user/login');
 				}
 				$session_data = array('Name'=>$user_data['name'], 'Roll number'=>$user_data['roll_no']);
 				$this->session->set_userdata($session_data);
-				$this->load->view('user/home', $user_data); //user_data array has all user info in table 'students'. This can be used in bootstrap generated view
+				if (empty($user_data['name']))
+				{
+					redirect('user/loaduserdata');
+				}
+				else
+				{
+					redirect('user/home');
+				}
 			}
 			
 		}
@@ -119,28 +126,89 @@ class user extends CI_Controller
 	
 	function loadUserData()
 	{
-		$this->form_validation->set_rules('fname', 'First Name', 'trim|required|alpha|min_length[3]|max_length[30]|xss_clean');
-		$this->form_validation->set_rules('lname', 'Last Name', 'trim|required|alpha|min_length[1]|max_length[30]|xss_clean');
-		$this->form_validation->set_rules('college', 'College', 'trim|required|alpha|min_length[3]|max_length[30]|xss_clean');
-		$this->form_validation->set_rules('year_intake', 'Year of intake', 'trim|required|numeric|exact_length[4]|greater_than[2011]|less_than['. intval(date("Y"))+1 .']|xss_clean');
-		//dept, regulation should be given as dropdwon
-		
-		if ($this->form_validation->run() == FALSE)
+		if (empty($this->session->userdata)
 		{
-			$this->load->view('user/load_user_data'); //load same page
+			redirect('user/login');
 		}
 		else
 		{
-			$load_data = $this->input->post();
-			if ($this->user_model->updateUserData($load_data))
+			$this->form_validation->set_rules('fname', 'First Name', 'trim|required|alpha|min_length[3]|max_length[30]|xss_clean');
+			$this->form_validation->set_rules('lname', 'Last Name', 'trim|required|alpha|min_length[1]|max_length[30]|xss_clean');
+			$this->form_validation->set_rules('college', 'College', 'trim|required|alpha|min_length[3]|max_length[30]|xss_clean');
+			$this->form_validation->set_rules('year_intake', 'Year of intake', 'trim|required|numeric|exact_length[4]|greater_than[2011]|less_than['. intval(date("Y"))+1 .']|xss_clean');
+			//dept, regulation should be given as dropdwon
+			
+			if ($this->form_validation->run() == FALSE)
 			{
-				$this->session->set_flashdata('load_status','Successfully updated in database');
-				redirect('user/loaduserdata');
+				$this->load->view('user/load_user_data'); //load same page
 			}
 			else
 			{
-				$this->session->set_flashdata('load_status','Failed to upload to database. Try later');
-				redirect('user/loaduserdata');
+				$load_data = $this->input->post();
+				if ($this->user_model->updateUserData($load_data))
+				{
+					$this->session->set_flashdata('load_status','Successfully updated in database');
+					redirect('user/home');
+				}
+				else
+				{
+					$this->session->set_flashdata('load_status','Failed to upload to database. Try later');
+					redirect('user/loaduserdata');
+				}
+			}
+		}
+	}
+	
+	function home()
+	{
+		if (empty($this->session->userdata))
+		{
+			redirect('user/login');
+		}
+		else
+		{
+			//retrive user data from DB and display them | college, roll_no, dept, GPA graph, current GPA, current CGPA and "link to calculate GPA, CGPA or update marks DB"
+		}
+	}
+	
+	function logout()
+	{
+		if (!empty($this->session->userdata))
+		{
+			$this->session->sess_destroy();
+			redirect('user/login');
+		}
+		else
+		{
+			redirect('user/login');
+		}
+	}
+	
+	function updateMarksDb()
+	{
+		if (empty($this->session->userdata))
+		{
+			redirect('user/login');
+		}
+		else
+		{
+			if (empty($this->input->post()))
+			{
+				$mark_list = $this->user_model->ret_mark_table($this->session->userdata('Roll number'));
+				//display the marks up to current sem in table format, with GPA below each table and CGPA at the bottom of page
+				$this->load->view('user/update_marks');
+			}
+			else
+			{
+				if ($this->user_model->update_mark_table($this->session->userdata('Roll number'), $this->input->post()))
+				{
+					redirect('user/updatemarksdb');
+				}
+				else
+				{
+					$this->session->set_flashdata('load_status','Failed to update in database');
+					redirect('user/updatemarksdb')
+				}
 			}
 		}
 	}
