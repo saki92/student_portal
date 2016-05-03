@@ -199,7 +199,7 @@ class user extends CI_Controller
 	
 	function updateMarksDb()
 	{
-		if (empty($this->session->userdata()))
+		if (empty($this->session->userdata('Roll number')))
 		{
 			redirect('user/login');
 		}
@@ -235,7 +235,7 @@ class user extends CI_Controller
 		}
 		else
 		{
-			$this->form_validation->set_message('year_check', 'Are you in future ?');
+			$this->form_validation->set_message('year_check', 'Do you have a time-machine ?');
 			return FALSE;
 		}
 	}
