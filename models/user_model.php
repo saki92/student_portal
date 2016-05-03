@@ -50,7 +50,7 @@ class user_model extends CI_Model
 	
 	function loginQuery($uname, $pword)
 	{
-		$query = $this->db->get_where('students', array('roll_no' => $uname, 'password' => $pword));
+		$query = $this->db->get_where('students', array('roll_no' => $uname, 'password' => md5($pword), 'acc_status' => 1));
 		if ($query->num_rows() > 0)
 		{
 			return $query->row_array();
@@ -61,9 +61,16 @@ class user_model extends CI_Model
 		}
 	}
 	
-	function updateUserData($new_data)
+	function retUserData($roll_no)
 	{
-		return $this->db->insert('students', $new_data);
+		$query = $this->db->get_where('students', array('roll_no' => $roll_no));
+		return $query->row_array();
+	}
+	
+	function updateUserData($new_data, $roll_no)
+	{
+		$this->dp->where('roll_no', $roll_no);
+		return $this->db->update('students', $new_data);
 	}
 }
 ?>
