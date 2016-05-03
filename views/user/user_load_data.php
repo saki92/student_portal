@@ -52,7 +52,7 @@
                 </div>
 
                 <div class="form-group">
-                    <button name="submit" type="submit" class="btn btn-default">Update</button>
+                    <button type="submit" class="btn btn-default">Update</button>
                     <button name="cancel" type="reset" class="btn btn-default">Cancel</button>
                 </div>
                 <?php echo form_close(); ?>
