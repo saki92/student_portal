@@ -21,10 +21,10 @@
             </div>
             <div class="panel-body">
                 <?php $attributes = array("name" => "registrationform");
-                echo form_open("user/register", $attributes);?>
+                echo form_open("user/loaduserdata", $attributes);?>
                 <div class="form-group">
                     <label for="name">Roll Number</label>
-                    <input class="form-control" name="roll_no" placeholder="Roll Number" type="text" value="<?php echo set_value('roll_no'); ?>" />
+                    <input class="form-control" name="roll_no" placeholder="Roll Number" type="text" maxlength="14" pattern="[0-9]{14}" value="<?php echo set_value('roll_no'); ?>" />
                     <span class="text-danger"><?php echo form_error('roll_no'); ?></span>
                 </div>
 
@@ -36,7 +36,7 @@
                 
                 <div class="form-group">
                     <label for="email">Email ID</label>
-                    <input class="form-control" name="email" placeholder="Email-ID" type="text" value="<?php echo set_value('email'); ?>" />
+                    <input class="form-control" name="email" placeholder="Email-ID" type="text" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,3}" value="<?php echo set_value('email'); ?>" />
                     <span class="text-danger"><?php echo form_error('email'); ?></span>
                 </div>
 
