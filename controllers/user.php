@@ -80,72 +80,84 @@ class user extends CI_Controller
 	
 	function login()
 	{
-		$data = $this->input->post();
-		$this->form_validation->set_rules('check_entered', 'Entered Sum', 'trim|required|numeric|max_length[2]|xss_clean');
-        $this->form_validation->set_rules('uname', 'Roll Number', 'trim|required|numeric|min_length[9]|max_length[13]|xss_clean');
-		$this->form_validation->set_rules('pword', 'Password', 'trim|required');
-		
-		if (!empty($data))
-		//if ($this->form_validation->run() == TRUE)
+		if (!empty($this->session->userdata('Roll number')))
 		{
-			if ($this->form_validation->run() == FALSE)
+			redirect('user/home');
+		}
+		else
+		{
+			$data = $this->input->post();
+			$this->form_validation->set_rules('check_entered', 'Entered Sum', 'trim|required|numeric');
+			$this->form_validation->set_rules('uname', 'Roll Number', 'trim|required|numeric');
+			$this->form_validation->set_rules('pword', 'Password', 'trim|required');
+			
+			if (!empty($data))
+			//if ($this->form_validation->run() == TRUE)
 			{
-				goto page_load;
-			}
-			elseif ($data['check_sum'] == md5($data['check_entered']))
-			{
-
-				$data = $this->input->post();
-				$user_data = $this->user_model->loginQuery($data['uname'], $data['pword']); //return as $query->row_array()
-				if (isset($user_data['error_msg']))
+				if ($this->form_validation->run() == FALSE)
 				{
-					$this->session->set_flashdata('login_status','Username and Password did not match');
+					goto page_load;
+				}
+				elseif ($data['check_sum'] == md5($data['check_entered']))
+				{
+
+					$data = $this->input->post();
+					$user_data = $this->user_model->loginQuery($data['uname'], $data['pword']); //return as $query->row_array()
+					if (isset($user_data['error_msg']))
+					{
+						$this->session->set_flashdata('login_status','Username and Password did not match');
+						redirect('user/login');
+					}
+					$session_data = array('Name'=>$user_data['name'], 'Roll number'=>$user_data['roll_no']);
+					$this->session->set_userdata($session_data);
+					if (empty($user_data['name']))
+					{
+						redirect('user/loaduserdata');
+					}
+					else
+					{
+						redirect('user/home');
+					}
+				}
+				elseif ($data['check_sum'] != md5($data['check_entered']))
+				{
+					$this->session->set_flashdata('login_status','Incorrect addition');
 					redirect('user/login');
 				}
-				$session_data = array('Name'=>$user_data['name'], 'Roll number'=>$user_data['roll_no']);
-				$this->session->set_userdata($session_data);
-				if (empty($user_data['name']))
-				{
-					redirect('user/loaduserdata');
-				}
-				else
-				{
-					redirect('user/home');
-				}
 			}
-			
+			else page_load:
+			{
+				$num1 = rand(0, 9);
+				$num2 = rand(0, 9);
+				$check = array('num1'=>$num1, 'num2'=>$num2, 'sum'=>md5($num1+$num2)); //to check bot or human
+				$this->load->view('user/login', $check); //give the $check['sum'] in the a hidden form with name="check_sum"
+			}
 		}
-		else page_load:
-		{
-			$num1 = rand(0, 9);
-			$num2 = rand(0, 9);
-			$check = array('num1'=>$num1, 'num2'=>$num2, 'sum'=>md5($num1+$num2)); //to check bot or human
-			$this->load->view('user/login', $check); //give the $check['sum'] in the a hidden form with name="check_sum"
-		}
+		
 	}
 	
 	function loadUserData()
 	{
-		if (empty($this->session->userdata)
+		if (empty($this->session->userdata('Roll number')))
 		{
 			redirect('user/login');
 		}
 		else
 		{
-			$this->form_validation->set_rules('fname', 'First Name', 'trim|required|alpha|min_length[3]|max_length[30]|xss_clean');
-			$this->form_validation->set_rules('lname', 'Last Name', 'trim|required|alpha|min_length[1]|max_length[30]|xss_clean');
-			$this->form_validation->set_rules('college', 'College', 'trim|required|alpha|min_length[3]|max_length[30]|xss_clean');
-			$this->form_validation->set_rules('year_intake', 'Year of intake', 'trim|required|numeric|exact_length[4]|greater_than[2011]|less_than['. intval(date("Y"))+1 .']|xss_clean');
+			$this->form_validation->set_rules('name', 'Name', 'trim|required|alpha|min_length[3]|max_length[30]');
+			$this->form_validation->set_rules('department', 'Department', 'trim|required|alpha|min_length[1]|max_length[30]');
+			$this->form_validation->set_rules('start_year', 'Year of intake', 'trim|required|numeric|exact_length[4]|greater_than[2011]|callback_year_check');
 			//dept, regulation should be given as dropdwon
 			
-			if ($this->form_validation->run() == FALSE)
+			if ($this->form_validation->run() == FALSE || empty($this->input->post()))
 			{
-				$this->load->view('user/load_user_data'); //load same page
+				$exist_data = $this->user_model->retUserData($this->session->userdata('Roll number'));
+				$this->load->view('user/user_load_data', $exist_data); //load same page
 			}
 			else
 			{
 				$load_data = $this->input->post();
-				if ($this->user_model->updateUserData($load_data))
+				if ($this->user_model->updateUserData($load_data, $this->session->userdata('Roll number')))
 				{
 					$this->session->set_flashdata('load_status','Successfully updated in database');
 					redirect('user/home');
@@ -161,21 +173,22 @@ class user extends CI_Controller
 	
 	function home()
 	{
-		if (empty($this->session->userdata))
+		if (empty($this->session->userdata('Roll number')))
 		{
 			redirect('user/login');
 		}
 		else
 		{
+			echo "hi user this is your home page"; 
 			//retrive user data from DB and display them | college, roll_no, dept, GPA graph, current GPA, current CGPA and "link to calculate GPA, CGPA or update marks DB"
 		}
 	}
 	
 	function logout()
 	{
-		if (!empty($this->session->userdata))
+		if (!empty($this->session->userdata('Roll number')))
 		{
-			$this->session->sess_destroy();
+			$this->session->unset_userdata('Roll number');
 			redirect('user/login');
 		}
 		else
@@ -186,7 +199,7 @@ class user extends CI_Controller
 	
 	function updateMarksDb()
 	{
-		if (empty($this->session->userdata))
+		if (empty($this->session->userdata()))
 		{
 			redirect('user/login');
 		}
@@ -207,9 +220,23 @@ class user extends CI_Controller
 				else
 				{
 					$this->session->set_flashdata('load_status','Failed to update in database');
-					redirect('user/updatemarksdb')
+					redirect('user/updatemarksdb');
 				}
 			}
+		}
+	}
+	
+	function year_check($a)
+	{
+		$b = intval(date("Y"));
+		if ($a <= $b)
+		{
+			return TRUE;
+		}
+		else
+		{
+			$this->form_validation->set_message('year_check', 'Are you in future ?');
+			return FALSE;
 		}
 	}
 }
