@@ -10,7 +10,11 @@ class Guest extends CI_Controller {
     
     public function index() 
     {
+		$this->load->view('template/header');
         $this->load->view('guest/index');
+		$this->load->view('template/navigation');
+		$this->load->view('template/info');
+		$this->load->view('template/fotter');
     }
     
     public function calculator($type)
@@ -22,7 +26,11 @@ class Guest extends CI_Controller {
 		$data['type'] = $type;
         
         //have to load header template here
+		$this->load->view('template/header');
         $this->load->view('guest/'.$type, $data);
+		$this->load->view('template/navigation');
+		$this->load->view('template/info');
+		$this->load->view('template/fotter');
         //have to load footer template here 
     }
     
@@ -46,7 +54,12 @@ class Guest extends CI_Controller {
         $data['sub_table'] = $this->table->generate();
         $data['title'] = 'List of subjects.';
         $data['type'] = $type;
-        $this->load->view('guest/table', $data); //table.php is common for gpa and cgpa
+		$this->load->view('template/header');
+        $this->load->view('guest/table', $data);
+		$this->load->view('template/navigation');
+		$this->load->view('template/info');
+		$this->load->view('template/fotter');
+		//table.php is common for gpa and cgpa
         //use a hidden form in table.php which can store the credit list so that it can
         //be used for gpa calculation.
     }
@@ -67,7 +80,11 @@ class Guest extends CI_Controller {
         }
         $data['result'] = $sum_nr / $sum_dr;
         $data['type'] = $all_values['type'];
+		$this->load->view('template/header');
         $this->load->view('guest/result', $data);
+		$this->load->view('template/navigation');
+		$this->load->view('template/info');
+		$this->load->view('template/fotter');
     }
     
 }
