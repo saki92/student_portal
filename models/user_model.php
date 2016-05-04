@@ -69,10 +69,10 @@ class user_model extends CI_Model
 	
 	function updateUserData($new_data, $roll_no)
 	{
-		$this->db->where('roll_no', $roll_no);
-		$a = $this->db->update('students', $new_data);
 		$this->db->select('department');
 		$old_dept = $this->db->get_where('students', array('roll_no' => $roll_no))->row_array();
+		$this->db->where('roll_no', $roll_no);
+		$a = $this->db->update('students', $new_data);
 		if ($old_dept['department'] == $new_data['department'])
 		{
 			return $a;
