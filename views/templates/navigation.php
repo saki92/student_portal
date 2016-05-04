@@ -1,3 +1,5 @@
+</article>								
+		</main>
 <nav id="left" class="column">
 			<h3>Left heading</h3>
 			<ul>
