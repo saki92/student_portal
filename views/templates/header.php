@@ -1,7 +1,1 @@
-<html>
-        <head>
-                <title>CodeIgniter Tutorial</title>
-        </head>
-        <body>
-
-                <h1><?php echo $title; ?></h1>
+<header id="header"><center><h2>Welcome to Students Portal !</h2></center></header>
