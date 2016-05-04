@@ -1,7 +1,2 @@
-<html>
-<head>
-    <title>hello</title>
-</head>
-<body><h1>hello guest</h1>
-</body>
-</html>
+<ul>
+<?php echo '<li><a href="'.site_url("guest/calculator/gpa").'">Calculate GPA</a></li><li><a href="'.site_url("guest/calculator/cgpa").'">Calculate CGPA</a></li>';?>
