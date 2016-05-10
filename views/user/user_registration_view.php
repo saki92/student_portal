@@ -21,10 +21,10 @@
             </div>
             <div class="panel-body">
                 <?php $attributes = array("name" => "registrationform");
-                echo form_open("user/loaduserdata", $attributes);?>
+                echo form_open("user/register", $attributes);?>
                 <div class="form-group">
                     <label for="name">Roll Number</label>
-                    <input class="form-control" name="roll_no" placeholder="Roll Number" type="text" maxlength="14" pattern="[0-9]{14}" value="<?php echo set_value('roll_no'); ?>" />
+                    <input class="form-control" name="roll_no" placeholder="Roll Number" type="text" maxlength="14" pattern="[a-zA-Z0-9]{4,15}" value="<?php echo set_value('roll_no'); ?>" />
                     <span class="text-danger"><?php echo form_error('roll_no'); ?></span>
                 </div>
 
