@@ -16,16 +16,16 @@ class user_model extends CI_Model
     //send verification email to user's email id
     function sendEmail($to_email)
     {
-        $from_email = 'mrxavir@gmail.com'; //change this to yours
+        $from_email = 'me@sakthive.in'; //change this to yours
         $subject = 'Verify Your Email Address';
         $message = 'Dear User,<br /><br />Please click on the below activation link to verify your email address.<br /><br /> '.base_url().'user/verify/' . md5($to_email) . '<br /><br /><br />Thanks<br />Studentportal Team';
         
         //configure email settings
         $config['protocol'] = 'smtp';
-        $config['smtp_host'] = 'ssl://smtp.googlemail.com'; //smtp host name
+        $config['smtp_host'] = 'ssl://mail.sakthive.in'; //smtp host name
         $config['smtp_port'] = '465'; //smtp port number
         $config['smtp_user'] = $from_email;
-        $config['smtp_pass'] = 'pornforever'; //$from_email password
+        $config['smtp_pass'] = 'handypandy1A'; //$from_email password
         $config['mailtype'] = 'html';
         $config['charset'] = 'iso-8859-1';
         $config['wordwrap'] = TRUE;

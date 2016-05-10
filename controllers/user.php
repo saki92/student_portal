@@ -18,8 +18,8 @@ class user extends CI_Controller
     function register()
     {
         //set validation rules
-        $this->form_validation->set_rules('roll_no', 'Roll Number', 'trim|required|numeric|min_length[3]|max_length[30]');
-        $this->form_validation->set_rules('email', 'Email ID', 'trim|required|valid_email');//|is_unique[students.email]');
+        $this->form_validation->set_rules('roll_no', 'Roll Number', 'trim|required');
+        $this->form_validation->set_rules('email', 'Email ID', 'trim|required|valid_email|is_unique[students.email]');
         $this->form_validation->set_rules('password', 'Password', 'trim|required|matches[cpassword]|md5');
         $this->form_validation->set_rules('cpassword', 'Confirm Password', 'trim|required');
         
