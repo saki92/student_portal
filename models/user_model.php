@@ -84,5 +84,39 @@ class user_model extends CI_Model
 			return $a && $b && $c;
 		}
 	}
+	
+	function retMarkTable($roll_no, $dept)
+	{
+		$this->db->select('subject_code, subject_name, credits', 'semester');
+        $this->db->where(array('department' => $dept, 'elective' => 0));
+		$query = $this->db->get('subjects');
+		$sub_list = $query->result();
+		$query = $this->db->get_where($dept, array('roll_no' => $roll_no));
+		$sub_grade = $query->row_array();
+		$i = 1;
+		while ($i <= 8)
+		{
+			$tab_name = 'table_'.$i;
+			$this->load->library('table', '', $tab_name);
+			$this->$tab_name->set_heading('Subject code', 'Subject name', 'Credits', 'Grade(enter them)');
+			$i++;
+		}
+		foreach ($sub_list as $row)
+		{
+			$temp_sem = $row->semester;
+			$tab_name = 'table_'.$temp_sem;
+            $grade_form = "<input type='text' name='".$row->subject_code."' required pattern='[sabcdeuSABCDEU]{1}' value='".$sub_grade[$row->subject_code]."'>";
+            //<form></form> to be included in views
+            $this->table_1->add_row($row->subject_code, $row->subject_name, $row->credits, $tab_name);
+		}
+		$i = 1;
+		while ($i <= 8)
+		{
+			$tab_name = 'table_'.$i;
+			$tables['table'.$i] = $this->$tab_name->generate();
+			$i++;
+		}
+		return $tables;
+	}
 }
 ?>

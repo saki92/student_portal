@@ -113,7 +113,7 @@ class user extends CI_Controller
 						$this->session->set_flashdata('login_status','Username and Password did not match');
 						redirect('user/login');
 					}
-					$session_data = array('Name'=>$user_data['name'], 'Roll number'=>$user_data['roll_no']);
+					$session_data = array('Dept'=>$user_data['department'], 'Roll number'=>$user_data['roll_no']);
 					$this->session->set_userdata($session_data);
 					if (empty($user_data['name']))
 					{
@@ -227,18 +227,18 @@ class user extends CI_Controller
 		{
 			if (empty($this->input->post()))
 			{
-				$mark_list = $this->user_model->ret_mark_table($this->session->userdata('Roll number'));
+				$mark_list = $this->user_model->retMarkTable($this->session->userdata('Roll number'), $this->session->userdata('Dept'));
 				//display the marks up to current sem in table format, with GPA below each table and CGPA at the bottom of page
 				$this->load->view('template/style');
 				$this->load->view('template/header');
-				$this->load->view('user/update_marks');
+				$this->load->view('user/update_marks', $mark_list);
 				$this->load->view('template/navigation');
 				$this->load->view('template/info');
 				$this->load->view('template/footer');
 			}
 			else
 			{
-				if ($this->user_model->update_mark_table($this->session->userdata('Roll number'), $this->input->post()))
+				if ($this->user_model->updateMarkTable($this->session->userdata('Roll number'), $this->input->post()))
 				{
 					redirect('user/updateMarksList');
 				}
