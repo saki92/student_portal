@@ -5,6 +5,7 @@ class user_model extends CI_Model
     {
         // Call the Model constructor
         parent::__construct();
+		$this->load->database();
     }
     
     //insert into user table
@@ -87,12 +88,14 @@ class user_model extends CI_Model
 	
 	function retMarkTable($roll_no, $dept)
 	{
-		$this->db->select('subject_code, subject_name, credits', 'semester');
+		$this->db->select('subject_code, subject_name, credits, semester');
         $this->db->where(array('department' => $dept, 'elective' => 0));
 		$query = $this->db->get('subjects');
 		$sub_list = $query->result();
 		$query = $this->db->get_where($dept, array('roll_no' => $roll_no));
 		$sub_grade = $query->row_array();
+		$query = $this->db->get_where('students', array('roll_no' => $roll_no));
+		$gpa_arr = $query->row_array();
 		$i = 1;
 		while ($i <= 8)
 		{
@@ -107,16 +110,55 @@ class user_model extends CI_Model
 			$tab_name = 'table_'.$temp_sem;
             $grade_form = "<input type='text' name='".$row->subject_code."' required pattern='[sabcdeuSABCDEU]{1}' value='".$sub_grade[$row->subject_code]."'>";
             //<form></form> to be included in views
-            $this->table_1->add_row($row->subject_code, $row->subject_name, $row->credits, $tab_name);
+            $this->$tab_name->add_row($row->subject_code, $row->subject_name, $row->credits, $grade_form);
 		}
 		$i = 1;
 		while ($i <= 8)
 		{
 			$tab_name = 'table_'.$i;
 			$tables['table'.$i] = $this->$tab_name->generate();
+			$tables['gpa_'.$i] = $gpa_arr['gpa_'.$i];
 			$i++;
 		}
+		$tables['cgpa'] = $gpa_arr['cgpa'];
 		return $tables;
+	}
+	
+	function updateMarkTable($roll_no, $dept, $grades)
+	{
+		$this->db->select('subject_code, credits, semester');
+		$this->db->where(array('department' => $dept, 'elective' => 0));
+		$query = $this->db->get('subjects');
+		$credits_list = $query->result_array();
+		$grade_eq = array('s'=>10, 'a'=>9, 'b'=>8, 'c'=>7, 'd'=>6, 'e'=>5, 'u'=>0);
+		$sum_nr = array_fill(1, 8, 0);
+        $sum_dr = array_fill(1, 8, 0);
+		$temp_credit = array_fill(1, 8, 0);
+		foreach ($grades as $key => $value)
+		{
+			if (strtolower($value == 'u')) { continue; }
+			foreach ($credits_list as $row)
+			{
+				if ($row['subject_code'] == $key)
+				{
+					$sem = $row['semester'];
+					$temp_credit[$sem] = $row['credits'];
+					break;
+				}
+			}
+            $sum_nr[$sem] = $sum_nr[$sem] + ($temp_credit[$sem] * $grade_eq[strtolower($value)]);
+            $sum_dr[$sem] = $sum_dr[$sem] + $temp_credit[$sem];
+		}
+		foreach ($sum_nr as $key => $value)
+		{
+			$new_data['gpa_'.$key] = $value / $sum_dr[$key];
+		}
+		$new_data['cgpa'] = array_sum($sum_nr) / array_sum($sum_dr);
+		$this->db->where('roll_no', $roll_no);
+		$a = $this->db->update('students', $new_data);
+		$this->db->where('roll_no', $roll_no);
+		$b = $this->db->update('civil', $grades);
+		return $a && $b;
 	}
 }
 ?>
