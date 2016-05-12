@@ -106,7 +106,7 @@ class user_model extends CI_Model
 		$this->db->select('semester');
 		$this->db->distinct();
 		$query = $this->db->get('subjects');
-		$sem_count = count($query->row_array());
+		$sem_count = count($query->result_array());
 		//////////counting no of semesters in this course//////////
 		//////////constructing table//////////
 		$i = 1;
@@ -146,11 +146,17 @@ class user_model extends CI_Model
 		$query = $this->db->get('subjects');
 		$credits_list = $query->result_array();
 		//////////getting credits for calculating GPA and CGPA//////////
+		//////////counting no of semesters in this course//////////
+		$this->db->select('semester');
+		$this->db->distinct();
+		$query = $this->db->get('subjects');
+		$sem_count = count($query->result_array());
+		//////////counting no of semesters in this course//////////
 		//////////calculating GPA for all semesters//////////
 		$grade_eq = array('s'=>10, 'a'=>9, 'b'=>8, 'c'=>7, 'd'=>6, 'e'=>5, 'u'=>0);
-		$sum_nr = array_fill(1, 12, 0);
-        $sum_dr = array_fill(1, 12, 0);
-		$temp_credit = array_fill(1, 12, 0);
+		$sum_nr = array_fill(1, $sem_count, 0);
+        $sum_dr = array_fill(1, $sem_count, 0);
+		$temp_credit = array_fill(1, $sem_count, 0);
 		foreach ($grades as $key => $value)
 		{
 			if (strtolower($value == 'u')) { continue; }
