@@ -1,7 +1,7 @@
 <div id="right" class="column">
 			<h3>Information</h3>
 			<ul>
-				<li><a href="#">About us</a></li>
-				<li><a href="#">Contact us</a></li>
+				<li><?php echo '<a href="'.site_url("info/aboutus").'">About us</a>';?></li>
+				<li><?php echo '<a href="'.site_url("info/contactus").'">Contact us</a>';?></li>
 			</ul>
 		</div>
