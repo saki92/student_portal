@@ -1,0 +1,8 @@
+[05-May-2016 07:37:45 UTC] PHP Fatal error:  Call to undefined function mysqli_init() in /home/sakthive/public_html/test/system/database/drivers/mysqli/mysqli_driver.php on line 136
+[05-May-2016 07:40:00 UTC] PHP Warning:  Unterminated comment starting line 76 in /home/sakthive/public_html/test/application/config/database.php on line 76
+[05-May-2016 07:40:36 UTC] PHP Fatal error:  Call to undefined function mysqli_init() in /home/sakthive/public_html/test/system/database/drivers/mysqli/mysqli_driver.php on line 136
+[05-May-2016 08:40:49 UTC] PHP Fatal error:  Call to undefined function mysqli_init() in /home/sakthive/public_html/test/system/database/drivers/mysqli/mysqli_driver.php on line 136
+[05-May-2016 08:43:46 UTC] PHP Fatal error:  Call to undefined function mysqli_init() in /home/sakthive/public_html/test/system/database/drivers/mysqli/mysqli_driver.php on line 136
+[05-May-2016 08:45:00 UTC] PHP Fatal error:  Call to undefined function mysqli_init() in /home/sakthive/public_html/test/system/database/drivers/mysqli/mysqli_driver.php on line 136
+[05-May-2016 09:11:39 UTC] PHP Fatal error:  Can't use method return value in write context in /home/sakthive/public_html/test/application/views/template/navigation.php on line 8
+[05-May-2016 09:14:34 UTC] PHP Fatal error:  Can't use method return value in write context in /home/sakthive/public_html/test/application/views/template/navigation.php on line 7
