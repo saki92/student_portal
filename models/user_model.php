@@ -15,11 +15,11 @@ class user_model extends CI_Model
     }
     
     //send verification email to user's email id
-    function sendEmail($to_email)
+    function sendEmail($to_email, $mail_sub, $mail_mess)
     {
         $from_email = 'me@sakthive.in'; //change this to yours
-        $subject = 'Verify Your Email Address';
-        $message = 'Dear User,<br /><br />Please click on the below activation link to verify your email address.<br /><br /> '.base_url().'user/verify/' . md5($to_email) . '<br /><br /><br />Thanks<br />Studentportal Team';
+        $subject = $mail_sub;
+        $message = $mail_mess
         
         //configure email settings
         $config['protocol'] = 'smtp';
@@ -185,6 +185,12 @@ class user_model extends CI_Model
 		$b = $this->db->update($dept, $grades); //updating department table with grades
 		//////////updating database//////////
 		return $a && $b;
+	}
+	
+	function email_exists($email)
+	{
+		$this->db->where('email',$email);
+		return $this->db->get('students');
 	}
 }
 ?>
