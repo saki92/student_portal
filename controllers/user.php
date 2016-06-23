@@ -47,11 +47,13 @@ class user extends CI_Controller
             if ($this->user_model->insertUser($data))
             {
                 // send email
-                if ($this->user_model->sendEmail($this->input->post('email')))
+				$to_email = $this->input->post('email');
+				$mess = 'Dear User,<br /><br />Please click on the below activation link to verify your email address.<br /><br /> '.base_url().'user/verify/' . md5($to_email) . '<br /><br /><br />Thanks<br />Studentportal Team';
+                if ($this->user_model->sendEmail($to_email, 'Verify Your Email Address', $mess))
                 {
                     // successfully sent mail
                     $this->session->set_flashdata('msg','<div class="alert alert-success text-center">You are Successfully Registered! Please confirm the mail sent to your Email-ID!!!</div>');
-                    redirect('user/register');
+                    redirect('user/message');
                 }
                 else
                 {
@@ -74,12 +76,12 @@ class user extends CI_Controller
         if ($this->user_model->verifyEmailID($hash))
         {
             $this->session->set_flashdata('verify_msg','<div class="alert alert-success text-center">Your Email Address is successfully verified! Please login to access your account!</div>');
-            redirect('user/register');
+            redirect('user/register/message');
         }
         else
         {
-            $this->session->set_flashdata('verify_msg','<div class="alert alert-danger text-center">Sorry! There is error verifying your Email Address!</div>');
-            redirect('user/register');
+            $this->session->set_flashdata('verify_msg','<div class="alert alert-danger text-center">Sorry! There is an error verifying your Email Address!</div>');
+            redirect('user/register/message');
         }
     }
 	
@@ -143,7 +145,71 @@ class user extends CI_Controller
 				$this->load->view('template/footer');
 			}
 		}
+	}
+	
 		
+	function forgot_password()
+	{
+		if (!empty($this->session->userdata('Roll number')))
+		{
+			redirect('user/home');
+		}
+		else
+		{
+			$data = $this->input->post();
+			$this->form_validation->set_rules('email', 'Email ID', 'trim|required|callback_email_check');
+			
+			if (!empty($data))
+			{
+				if ($this->form_validation->run() == FALSE)
+				{
+					goto page_load;
+				}
+				elseif ($data['check_sum'] == md5($data['check_entered']))
+				{
+					$to_email = $this->input->post('email');
+					$mess = 'Dear User,<br /><br />Please click on the below link to reset your password.<br /><br /> '.base_url().'user/reset_password/' . md5($to_email) . '<br /><br /><br />Thanks<br />Studentportal Team';
+					if ($this->user_model->sendEmail($to_email, 'Reset Password', $mess))
+					{
+						// successfully sent mail
+						$this->session->set_flashdata('msg','<div class="alert alert-success text-center">Follow the link sent to your mail ID !</div>');
+						redirect('user/message');
+					}
+					else
+					{
+						// error
+						$this->session->set_flashdata('msg','<div class="alert alert-danger text-center">Oops! Error.  Please try again later!!!</div>');
+						redirect('user/forgot_password');
+					}
+				}
+			}
+			else page_load:
+			{
+				$num1 = rand(0, 9);
+				$num2 = rand(0, 9);
+				$check = array('num1'=>$num1, 'num2'=>$num2, 'sum'=>md5($num1+$num2)); //to check bot or human
+				$this->load->view('template/style');
+				$this->load->view('template/header');
+				$this->load->view('user/forgot_password', $check); //give the $check['sum'] in the a hidden form with name="check_sum"
+				$this->load->view('template/navigation');
+				$this->load->view('template/info');
+				$this->load->view('template/footer');
+			}
+		}
+	}
+	
+	function email_check($email)
+	{
+		$query = $this->user_model->email_exists($email);
+		if ($query->num_rows() > 0)
+		{
+			return true;
+		}
+		else
+		{
+			$this->form_validation->set_message('email_check', 'Email ID not registered with us !');
+			return false;
+		}
 	}
 	
 	function loadUserData()
@@ -266,6 +332,16 @@ class user extends CI_Controller
 			$this->form_validation->set_message('year_check', 'Do you have a time-machine ?');
 			return FALSE;
 		}
+	}
+	
+	function message()
+	{
+		$this->load->view('template/style');
+		$this->load->view('template/header');
+		$this->load->view('user/messages');
+		$this->load->view('template/navigation');
+		$this->load->view('template/info');
+		$this->load->view('template/footer');
 	}
 }
 ?>
