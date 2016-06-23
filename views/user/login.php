@@ -44,7 +44,6 @@
                     <button name="submit" type="submit" class="btn btn-default">Login</button>
                     <button name="cancel" type="reset" class="btn btn-default">Reset</button>
                 </div>
-				
 				<?php echo form_close(); ?>
                 <?php echo $this->session->flashdata('login_status'); ?>
             </div>
