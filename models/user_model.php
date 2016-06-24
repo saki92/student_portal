@@ -26,7 +26,7 @@ class user_model extends CI_Model
         $config['smtp_host'] = 'ssl://mail.sakthive.in'; //smtp host name
         $config['smtp_port'] = '465'; //smtp port number
         $config['smtp_user'] = $from_email;
-        $config['smtp_pass'] = 'handypandy1A'; //$from_email password
+        $config['smtp_pass'] = ''; //$from_email password
         $config['mailtype'] = 'html';
         $config['charset'] = 'iso-8859-1';
         $config['wordwrap'] = TRUE;
