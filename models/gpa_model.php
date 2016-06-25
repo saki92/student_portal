@@ -11,13 +11,13 @@ class Gpa_model extends CI_Model {
         if ($type == 'gpa')
         {
             $this->db->select('subject_code, subject_name, credits');
-            $this->db->where(array('semester' => $sem, 'department' => $dept, 'elective' => 0));
+            $this->db->where(array('semester' => $sem, 'department' => $dept, 'regulation' => 2013));
             $query = $this->db->get('subjects'); //equivalent to FROM clause
         }
         elseif ($type == 'cgpa')
         {
             $this->db->select('subject_code, subject_name, credits');
-            $this->db->where(array('semester <=' => $sem, 'department' => $dept, 'elective' => 0));
+            $this->db->where(array('semester <=' => $sem, 'department' => $dept, 'regulation' => 2013));
             $query = $this->db->get('subjects'); //equivalent to FROM clause
         }
         return $query->result();

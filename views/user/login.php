@@ -43,8 +43,12 @@
 				<div class="form-group">
                     <button name="submit" type="submit" class="btn btn-default">Login</button>
                     <button name="cancel" type="reset" class="btn btn-default">Reset</button>
-                </div>
 				<?php echo form_close(); ?>
+					<form action="<?php echo base_url().'user/forgot_password/';?>">
+					<button name="submit" type="submit" class="btn btn-default">Forgot Password</button>
+					</form>
+                </div>
+
                 <?php echo $this->session->flashdata('login_status'); ?>
             </div>
         </div>

@@ -35,13 +35,18 @@
                 
                 <div class="form-group">
                     <label for="college">College</label>
-                    <input class="form-control" name="college" placeholder="College" type="text" value="<?php echo $college; ?>" />
+                    <input class="form-control" name="college" placeholder="College" type="text" value="<?php echo $college; ?>"/>
                     <span class="text-danger"><?php echo form_error('college'); ?></span>
                 </div>
 
                 <div class="form-group">
                     <label for="department">Department</label>
-                    <input class="form-control" name="department" placeholder="Department" type="text" value="<?php echo $department; ?>"/>
+                    <?php 
+					$options = array(
+					'civil'         => 'Civil Engineering',
+					'aeronautical'           => 'Aernautical Engineering',
+					'electronics_and_communication'         => 'ECE');
+					echo form_dropdown('department', $options, $department);?>
                     <span class="text-danger"><?php echo form_error('department'); ?></span>
                 </div>
 

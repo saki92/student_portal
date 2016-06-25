@@ -19,14 +19,14 @@ class user_model extends CI_Model
     {
         $from_email = 'me@sakthive.in'; //change this to yours
         $subject = $mail_sub;
-        $message = $mail_mess
+        $message = $mail_mess;
         
         //configure email settings
         $config['protocol'] = 'smtp';
         $config['smtp_host'] = 'ssl://mail.sakthive.in'; //smtp host name
         $config['smtp_port'] = '465'; //smtp port number
         $config['smtp_user'] = $from_email;
-        $config['smtp_pass'] = ''; //$from_email password
+        $config['smtp_pass'] = 'handypandy1A'; //$from_email password
         $config['mailtype'] = 'html';
         $config['charset'] = 'iso-8859-1';
         $config['wordwrap'] = TRUE;
@@ -92,7 +92,7 @@ class user_model extends CI_Model
 	{
 		//////////retreiving subject list//////////
 		$this->db->select('subject_code, subject_name, credits, semester');
-        $this->db->where(array('department' => $dept, 'elective' => 0));
+        $this->db->where(array('department' => $dept, 'regulation' => 2013));
 		$query = $this->db->get('subjects');
 		$sub_list = $query->result();
 		//////////retreiving subject list//////////
@@ -142,7 +142,7 @@ class user_model extends CI_Model
 	{
 		//////////getting credits for calculating GPA and CGPA//////////
 		$this->db->select('subject_code, credits, semester');
-		$this->db->where(array('department' => $dept, 'elective' => 0));
+		$this->db->where(array('department' => $dept, 'regulation' => 2013));
 		$query = $this->db->get('subjects');
 		$credits_list = $query->result_array();
 		//////////getting credits for calculating GPA and CGPA//////////
@@ -185,6 +185,13 @@ class user_model extends CI_Model
 		$b = $this->db->update($dept, $grades); //updating department table with grades
 		//////////updating database//////////
 		return $a && $b;
+	}
+	
+	function changePassword($email, $data)
+	{
+		$pass_data = array('password' => $data['new_password']); //update password
+        $this->db->where('md5(email)', $email);
+        return $this->db->update('students', $pass_data);
 	}
 	
 	function email_exists($email)

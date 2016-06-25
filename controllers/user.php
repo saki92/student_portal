@@ -76,7 +76,7 @@ class user extends CI_Controller
         if ($this->user_model->verifyEmailID($hash))
         {
             $this->session->set_flashdata('verify_msg','<div class="alert alert-success text-center">Your Email Address is successfully verified! Please login to access your account!</div>');
-            redirect('user/register/message');
+            redirect('user/message');
         }
         else
         {
@@ -147,7 +147,6 @@ class user extends CI_Controller
 		}
 	}
 	
-		
 	function forgot_password()
 	{
 		if (!empty($this->session->userdata('Roll number')))
@@ -212,6 +211,51 @@ class user extends CI_Controller
 		}
 	}
 	
+	function reset_password($hash = NULL)
+	{
+		$this->form_validation->set_rules('new_password', 'Password', 'trim|required|matches[cpassword]|md5');
+        $this->form_validation->set_rules('cpassword', 'Confirm Password', 'trim|required');
+		
+		if (!empty($this->input->post()) && !empty($this->session->userdata('email_r_pass')))
+		{
+			if ($this->form_validation->run() == TRUE)
+			{
+				if ($this->user_model->changePassword($this->session->userdata('email_r_pass'), $this->input->post()))
+				{
+					$this->session->set_flashdata('verify_msg','<div class="alert alert-success text-center">Your password is changed successfully! Please login to access your account!</div>');
+					$this->session->unset_userdata('email_r_pass');
+					redirect('user/message');
+				}
+				else
+				{
+					$this->session->set_flashdata('verify_msg','<div class="alert alert-danger text-center">Sorry! There is an error in changing your password!</div>');
+					redirect('user/message');
+				}
+			}
+			else
+			{
+				$this->load->view('template/style');
+				$this->load->view('template/header');
+				$this->load->view('user/reset_password');
+				$this->load->view('template/navigation');
+				$this->load->view('template/info');
+				$this->load->view('template/footer');;
+			}
+		}
+		else
+		{
+			$session_data = array('email_r_pass'=>$hash);
+			$this->session->set_userdata($session_data);
+			$this->load->view('template/style');
+			$this->load->view('template/header');
+			$this->load->view('user/reset_password');
+			$this->load->view('template/navigation');
+			$this->load->view('template/info');
+			$this->load->view('template/footer');
+		}
+		
+	}
+	
 	function loadUserData()
 	{
 		if (empty($this->session->userdata('Roll number')))
@@ -221,7 +265,7 @@ class user extends CI_Controller
 		else
 		{
 			$this->form_validation->set_rules('name', 'Name', 'trim|required|alpha|min_length[3]|max_length[30]');
-			$this->form_validation->set_rules('department', 'Department', 'trim|required|alpha|min_length[1]|max_length[30]');
+			$this->form_validation->set_rules('college', 'College', 'trim|required');
 			$this->form_validation->set_rules('start_year', 'Year of intake', 'trim|required|numeric|exact_length[4]|greater_than[2011]|callback_year_check');
 			//dept, regulation should be given as dropdwon
 			
