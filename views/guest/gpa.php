@@ -20,6 +20,7 @@
 	<select name="dept">
 		<option value="civil">Civil</option>
 		<option value="aeronautical">Aeronautical</option>
+		<option value="electronics_and_communication">ECE</option>
 	</select>
 	<br><br>
 	<input type="submit">

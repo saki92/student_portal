@@ -284,7 +284,7 @@ class user extends CI_Controller
 				$load_data = $this->input->post();
 				if ($this->user_model->updateUserData($load_data, $this->session->userdata('Roll number')))
 				{
-					$this->session->set_userdata('Department', $load_data['deprtment']);
+					$this->session->set_userdata('Department', $load_data['department']);
 					$this->session->set_flashdata('load_status','Successfully updated in database');
 					redirect('user/home');
 				}

@@ -84,6 +84,7 @@ class user_model extends CI_Model
 		{
 			$c = $this->db->delete($old_dept['department'], array('roll_no' => $roll_no)); //delete his record from old department
 			$b = $this->db->insert($new_data['department'], array('roll_no' => $roll_no)); //insert a empty record into new department table
+			$d = $this->db->update('students', array('gpa_1'=>0, 'gpa_2'=>0, 'gpa_3'=>0, 'gpa_4'=>0,'gpa_5'=>0, 'gpa_6'=>0,'gpa_7'=>0, 'gpa_8'=>0, 'cgpa'=>0)); //update gpa and cgpa
 			return $a && $b && $c;
 		}
 	}
@@ -119,6 +120,7 @@ class user_model extends CI_Model
 		}
 		foreach ($sub_list as $row) //loading each table with data and input form
 		{
+			if ($sub_grade[$row->subject_code] == NULL) { $sub_grade[$row->subject_code] = 'u'; }
 			$temp_sem = $row->semester;
 			$tab_name = 'table_'.$temp_sem;
             $grade_form = "<input type='text' name='".$row->subject_code."' required pattern='[sabcdeuSABCDEU]{1}' value='".$sub_grade[$row->subject_code]."'>";
@@ -171,10 +173,15 @@ class user_model extends CI_Model
 			}
             $sum_nr[$sem] = $sum_nr[$sem] + ($temp_credit[$sem] * $grade_eq[strtolower($value)]);
             $sum_dr[$sem] = $sum_dr[$sem] + $temp_credit[$sem];
+			//echo print_r($sum_dr);
 		}
 		foreach ($sum_nr as $key => $value)
 		{
-			$new_data['gpa_'.$key] = $value / $sum_dr[$key];
+			if ($sum_dr[$key] == 0) { $new_data['gpa_'.$key] = 0; } //to handle divide by 0 error
+			else
+			{
+				$new_data['gpa_'.$key] = $value / $sum_dr[$key]; //gpa final calculation
+			}
 		}
 		//////////calculating GPA for all semesters//////////
 		$new_data['cgpa'] = array_sum($sum_nr) / array_sum($sum_dr); //calculating CGPA
